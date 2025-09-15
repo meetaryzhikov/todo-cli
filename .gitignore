@@ -1,0 +1,43 @@
+# macOS system files
+.DS_Store
+
+# Windows system files
+Thumbs.db
+
+# Editors / IDEs
+.vscode/
+*.code-workspace
+
+# Lisp build artifacts
+*.fasl
+*.fas
+*.lib
+*.o
+*.so
+*.a
+*.dx32fsl
+*.dx64fsl
+*.lx32fsl
+*.lx64fsl
+
+# Lisp package managers
+.asdf/
+.quicklisp/
+
+# Temporary / cache files
+*.cache
+*.tmp
+*.log
+
+# Build & distribution directories
+build/
+dist/
+
+# Alive (Lisp REPL helper)
+.alive/
+*.alive
+
+# Backup / swap files
+*~
+*.bak
+*.swp
