@@ -31,3 +31,43 @@
             (setf (storage-todos storage)
               (mapcar #'plist-to-todo data))))))
     storage))
+
+(defmethod save-todos ((storage file-storage))
+  "Save tasks to file"
+  (with-open-file (stream (storage-file-path storage)
+                        :direction :output
+                        :if-exists :supersede
+                        :if-does-not-exist :create)
+    (prin1 (mapcar #'todo-to-plist (storage-todos storage)) stream))
+  storage)
+
+(defmethod add-todo ((storage file-storage) title description)
+  "Add new task"
+  (let* ((todos (storage-todos storage))
+         (next-id (if todos (1+ (reduce #'max todos :key #'todo-id)) 1))
+         (todo (make-todo :id next-id
+                          :title title
+                          :description description
+                          :created-at (current-timestamp))))
+    (push todo (storage-todos storage))
+    (save-todos storage)
+    todo))
+
+(defmethod remove-todo ((storage file-storage) id)
+  "Delete task by ID"
+  (setf (storage-todos storage)
+        (remove-if (lambda (todo) (= (todo-id todo) id))
+                   (storage-todo storage)))
+  (save-todos storage))
+
+(defmethod find-todo-by-id ((storage file-storage) id)
+  "Find task by ID"
+  (find-if (lambda (todo) (= (todo-id todo) id))
+           (storage-todos storage)))
+
+(defmethod list-todos ((storage file-storage) &key show-completed)
+  "Get a list of tasks"
+  (let ((todos (storage-todos storage)))
+    (if show-completed
+      todos
+      (remove-if #'todo-completed-p todos))))
