@@ -1,0 +1,14 @@
+#!/bin/bash
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+EXECUTABLE="$SCRIPT_DIR/todo"
+
+if [ -f "$EXECUTABLE" ]; then
+  exec "$EXECUTABLE" "$@"
+else
+  sbcl --noinform --disable-debugger \
+       --eval "(push \"$SCRIPT_DIR/../\" asdf:*central-registry*)" \
+       --eval "(asdf:load-system :todo-cli)" \
+       --eval "(todo-cli:main)" \
+       --quit
+fi
