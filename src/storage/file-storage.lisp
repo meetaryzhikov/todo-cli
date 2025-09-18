@@ -57,7 +57,7 @@
   "Delete task by ID"
   (setf (storage-todos storage)
         (remove-if (lambda (todo) (= (todo-id todo) id))
-                   (storage-todo storage)))
+                   (storage-todos storage)))
   (save-todos storage))
 
 (defmethod find-todo-by-id ((storage file-storage) id)
