@@ -1,5 +1,6 @@
 (asdf:defsystem "todo-cli"
   :description "Simple command-line TODO application"
+  :long-description "A command-line todo application written in Common Lisp that allows users to manage their tasks from the terminal."
   :author "Aleksandr Ryzhikov <meet.aryzhikov@gmail.com>"
   :license "MIT"
   :version "0.1.0"
