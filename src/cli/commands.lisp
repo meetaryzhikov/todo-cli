@@ -17,7 +17,7 @@
   "Show help"
   (format t "ToDo CLI - Simple Task Management App~%~%")
   (format t "Usage:~%")
-  (format t " todo add <title> [description]  - Add new task~%")
+  (format t " todo add <title> [description] [priority]  - Add new task (priority: high, medium, low)~%")
   (format t " todo list [--all]               - Show task list~%")
   (format t " todo complete <id>              - Mark task as completed~%")
   (format t " todo remove <id>                - Delete task~%")
@@ -29,9 +29,11 @@
     ((null args)
       (format t "Error: Task name not specified~%"))
     (t
-      (let ((title (first args))
-            (description (if (rest args) (second args) "")))
-        (let ((todo (add-todo storage title description)))
+      (let* ((title (first args))
+             (description (if (rest args) (second args) ""))
+             (priority-str (if (cddr args) (third args) "medium"))
+             (priority (intern (string-upcase priority-str) :keyword)))
+        (let ((todo (add-todo storage title description priority)))
           (format t "Added task #~d: ~a~%"
             (todo-id todo) (todo-title todo)))))))
 
@@ -82,11 +84,12 @@
 
 (defun format-todo (todo)
   "Format the task for output"
-  (format nil "[~a] #~d ~a~a~a"
+  (format nil "[~a] #~d ~a~a~a [~a]"
     (if (todo-completed-p todo) "✓" " ")
     (todo-id todo)
     (todo-title todo)
     (if (not (string-empty-p (todo-description todo)))
         (format nil " - ~a" (todo-description todo))
         "")
-    (format nil " (~a)" (format-date (todo-created-at todo)))))
+    (format nil " (~a)" (format-date (todo-created-at todo)))
+    (string-downcase (symbol-name (todo-priority todo)))))

@@ -41,13 +41,14 @@
     (prin1 (mapcar #'todo-to-plist (storage-todos storage)) stream))
   storage)
 
-(defmethod add-todo ((storage file-storage) title description)
+(defmethod add-todo ((storage file-storage) title description &optional (priority :medium))
   "Add new task"
   (let* ((todos (storage-todos storage))
          (next-id (if todos (1+ (reduce #'max todos :key #'todo-id)) 1))
          (todo (make-todo :id next-id
                           :title title
                           :description description
+                          :priority priority
                           :created-at (current-timestamp))))
     (push todo (storage-todos storage))
     (save-todos storage)

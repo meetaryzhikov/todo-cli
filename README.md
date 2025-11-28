@@ -32,7 +32,7 @@ todo <command> [arguments]
 
 ## Commands
 
-- `add <title> [description]` - Add a new task
+- `add <title> [description] [priority]` - Add a new task (priority: high, medium, low; default: medium)
 - `list [--all]` - Show task list (use --all to include completed tasks)
 - `complete <id>` - Mark task as completed
 - `remove <id>` - Delete a task

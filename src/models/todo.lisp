@@ -6,6 +6,7 @@
   (title "" :type string)
   (description "" :type string)
   (completed-p nil :type boolean)
+  (priority :medium :type keyword)
   (created-at nil :type (or null integer))
   (completed-at nil :type (or null integer)))
 
@@ -21,6 +22,7 @@
         :title (todo-title todo)
         :description (todo-description todo)
         :completed-p (todo-completed-p todo)
+        :priority (todo-priority todo)
         :created-at (todo-created-at todo)
         :completed-at (todo-completed-at todo)))
 
@@ -30,5 +32,6 @@
              :title (getf plist :title)
              :description (getf plist :description)
              :completed-p (getf plist :completed-p)
+             :priority (getf plist :priority :medium)
              :created-at (getf plist :created-at)
              :completed-at (getf plist :completed-at)))

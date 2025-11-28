@@ -13,6 +13,7 @@
            #:todo-title
            #:todo-description
            #:todo-completed-p
+           #:todo-priority
            #:todo-created-at
            #:todo-completed-at
            #:complete-todo
