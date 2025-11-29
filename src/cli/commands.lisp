@@ -10,9 +10,10 @@
     (:add (add-command (command-args command) storage))
     (:list (list-command (command-args command) storage))
     (:complete (complete-command (command-args command) storage))
-    (:remove (remove-command (command-args command) storage))
-    (:reminders (reminders-command storage))
-    (:unknown (format t "Unknown command. Use 'help' for help.~%"))))
+     (:remove (remove-command (command-args command) storage))
+     (:edit (edit-command (command-args command) storage))
+     (:reminders (reminders-command storage))
+     (:unknown (format t "Unknown command. Use 'help' for help.~%"))))
 
 (defun help-command ()
   "Show help"
@@ -20,10 +21,11 @@
   (format t "Usage:~%")
   (format t " todo add <title> [description] [priority] [due-date]  - Add new task (priority: high, medium, low; due-date: YYYY-MM-DD)~%")
   (format t " todo list [--all]               - Show task list~%")
-  (format t " todo complete <id>              - Mark task as completed~%")
-  (format t " todo remove <id>                - Delete task~%")
-  (format t " todo reminders                  - Show overdue tasks~%")
-  (format t " todo help                       - Show this help~%~%"))
+   (format t " todo complete <id>              - Mark task as completed~%")
+   (format t " todo remove <id>                - Delete task~%")
+   (format t " todo edit <id> <title> [desc] [pri] [due] - Edit task~%")
+   (format t " todo reminders                  - Show overdue tasks~%")
+   (format t " todo help                       - Show this help~%~%"))
 
 (defun add-command (args storage)
   "Add new task"
@@ -35,8 +37,8 @@
              (description (if (rest args) (second args) ""))
              (priority-str (if (cddr args) (third args) "medium"))
              (priority (intern (string-upcase priority-str) :keyword))
-             (due-date-str (if (cdddr args) (fourth args) nil))
-             (due-date (parse-date due-date-str)))
+              (due-date-str (if (cdddr args) (fourth args) nil))
+              (due-date (if due-date-str (parse-date due-date-str) nil)))
         (let ((todo (add-todo storage title description priority due-date)))
           (format t "Added task #~d: ~a~%"
             (todo-id todo) (todo-title todo)))))))
@@ -82,6 +84,29 @@
               (progn
                 (remove-todo storage id)
                 (format t "Task #~d removed~%" id))
+              (format t "Task with ID ~d not found~%" id)))
+          (format t "Error: Invalid task ID~%"))))))
+
+(defun edit-command (args storage)
+  "Edit existing task"
+  (cond
+    ((null args)
+      (format t "Error: Task ID not specified~%"))
+    ((null (rest args))
+      (format t "Error: Task title not specified~%"))
+    (t
+      (let ((id (parse-integer-safe (first args))))
+        (if id
+          (let ((todo (find-todo-by-id storage id)))
+            (if todo
+              (let* ((title (second args))
+                     (description (if (cddr args) (third args) ""))
+                     (priority-str (if (cdddr args) (fourth args) "medium"))
+                     (priority (intern (string-upcase priority-str) :keyword))
+                     (due-date-str (if (cddddr args) (fifth args) nil))
+                     (due-date (if due-date-str (parse-date due-date-str) nil)))
+                (update-todo storage id title description priority due-date)
+                (format t "Task #~d updated~%" id))
               (format t "Task with ID ~d not found~%" id)))
           (format t "Error: Invalid task ID~%"))))))
 

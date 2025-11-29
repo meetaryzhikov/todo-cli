@@ -19,7 +19,9 @@
       (make-command :name :complete :args (rest args)))
     ((string= (first args) "remove")
       (make-command :name :remove :args (rest args)))
-    ((string= (first args) "reminders")
-      (make-command :name :reminders))
-    (t
-      (make-command :name :unknown :args args))))
+     ((string= (first args) "reminders")
+       (make-command :name :reminders))
+     ((string= (first args) "edit")
+       (make-command :name :edit :args (rest args)))
+     (t
+       (make-command :name :unknown :args args))))

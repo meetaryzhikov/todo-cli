@@ -24,15 +24,16 @@
 
 (defpackage :todo-cli.storage
   (:use :cl :todo-cli.models :todo-cli.utils)
-  (:export #:storage
-           #:file-storage
-           #:make-file-storage
-           #:load-todos
-           #:save-todos
-           #:add-todo
-           #:remove-todo
-           #:find-todo-by-id
-           #:list-todos))
+   (:export #:storage
+            #:file-storage
+            #:make-file-storage
+            #:load-todos
+            #:save-todos
+            #:add-todo
+            #:update-todo
+            #:remove-todo
+            #:find-todo-by-id
+            #:list-todos))
 
 (defpackage :todo-cli.cli
   (:use :cl :todo-cli.models :todo-cli.storage :todo-cli.utils)

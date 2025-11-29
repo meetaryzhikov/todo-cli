@@ -67,6 +67,17 @@
   (find-if (lambda (todo) (= (todo-id todo) id))
            (storage-todos storage)))
 
+(defmethod update-todo ((storage file-storage) id title description priority due-date)
+  "Update task by ID"
+  (let ((todo (find-todo-by-id storage id)))
+    (when todo
+      (setf (todo-title todo) title
+            (todo-description todo) description
+            (todo-priority todo) priority
+            (todo-due-date todo) due-date)
+      (save-todos storage)
+      todo)))
+
 (defmethod list-todos ((storage file-storage) &key show-completed)
   "Get a list of tasks"
   (let ((todos (storage-todos storage)))
