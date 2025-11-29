@@ -23,3 +23,14 @@
     (handler-case
       (parse-integer str)
       (error () nil))))
+
+(defun parse-date (date-str)
+  "Parse date string in YYYY-MM-DD format to universal time"
+  (when (and date-str (not (string-empty-p date-str)))
+    (handler-case
+      (let* ((parts (split-sequence:split-sequence #\- date-str))
+             (year (parse-integer (first parts)))
+             (month (parse-integer (second parts)))
+             (day (parse-integer (third parts))))
+        (encode-universal-time 0 0 0 day month year))
+      (error () nil))))
