@@ -4,7 +4,7 @@
 
 - [x] **Priorities**: Add high/medium/low priorities to todos for better organization.
 - [x] **Due Dates**: Implement due dates and reminders to track deadlines.
-- [ ] **Edit Command**: Allow modifying existing tasks with an edit command.
+- [x] **Edit Command**: Allow modifying existing tasks with an edit command.
 - [ ] **Search/Filter**: Add functionality to search and filter tasks by title, status, or date.
 - [ ] **Sorting Options**: Include sorting by creation date, priority, or due date.
 - [ ] **Statistics**: Add a command to show completed tasks, overdue items, etc.
