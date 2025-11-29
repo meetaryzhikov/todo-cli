@@ -11,16 +11,18 @@
     (:list (list-command (command-args command) storage))
     (:complete (complete-command (command-args command) storage))
     (:remove (remove-command (command-args command) storage))
+    (:reminders (reminders-command storage))
     (:unknown (format t "Unknown command. Use 'help' for help.~%"))))
 
 (defun help-command ()
   "Show help"
   (format t "ToDo CLI - Simple Task Management App~%~%")
   (format t "Usage:~%")
-  (format t " todo add <title> [description] [priority]  - Add new task (priority: high, medium, low)~%")
+  (format t " todo add <title> [description] [priority] [due-date]  - Add new task (priority: high, medium, low; due-date: YYYY-MM-DD)~%")
   (format t " todo list [--all]               - Show task list~%")
   (format t " todo complete <id>              - Mark task as completed~%")
   (format t " todo remove <id>                - Delete task~%")
+  (format t " todo reminders                  - Show overdue tasks~%")
   (format t " todo help                       - Show this help~%~%"))
 
 (defun add-command (args storage)
@@ -32,15 +34,16 @@
       (let* ((title (first args))
              (description (if (rest args) (second args) ""))
              (priority-str (if (cddr args) (third args) "medium"))
-             (priority (intern (string-upcase priority-str) :keyword)))
-        (let ((todo (add-todo storage title description priority)))
+             (priority (intern (string-upcase priority-str) :keyword))
+             (due-date-str (if (cdddr args) (fourth args) nil))
+             (due-date (parse-date due-date-str)))
+        (let ((todo (add-todo storage title description priority due-date)))
           (format t "Added task #~d: ~a~%"
             (todo-id todo) (todo-title todo)))))))
 
 (defun list-command (args storage)
   "Show tasks list"
-  (let ((show-all (member "--all" args :test #'string=))
-        (todos (list-todos storage :show-completed
+  (let ((todos (list-todos storage :show-completed
                   (member "--all" args :test #'string=))))
     (if todos
       (progn
@@ -82,9 +85,24 @@
               (format t "Task with ID ~d not found~%" id)))
           (format t "Error: Invalid task ID~%"))))))
 
+(defun reminders-command (storage)
+  "Show overdue tasks"
+  (let ((overdue-todos (remove-if-not
+                        (lambda (todo)
+                          (and (todo-due-date todo)
+                               (< (todo-due-date todo) (current-timestamp))
+                               (not (todo-completed-p todo))))
+                        (list-todos storage :show-completed t))))
+    (if overdue-todos
+      (progn
+        (format t "~%Overdue tasks:~%")
+        (format t "~{~a~%~}"
+          (mapcar #'format-todo overdue-todos)))
+      (format t "No overdue tasks~%"))))
+
 (defun format-todo (todo)
   "Format the task for output"
-  (format nil "[~a] #~d ~a~a~a [~a]"
+  (format nil "[~a] #~d ~a~a~a [~a]~a"
     (if (todo-completed-p todo) "✓" " ")
     (todo-id todo)
     (todo-title todo)
@@ -92,4 +110,7 @@
         (format nil " - ~a" (todo-description todo))
         "")
     (format nil " (~a)" (format-date (todo-created-at todo)))
-    (string-downcase (symbol-name (todo-priority todo)))))
+    (string-downcase (symbol-name (todo-priority todo)))
+    (if (todo-due-date todo)
+        (format nil " due: ~a" (format-date (todo-due-date todo)))
+        "")))
