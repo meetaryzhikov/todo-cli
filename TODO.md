@@ -3,7 +3,7 @@
 ## Suggested Enhancements for Better User Experience
 
 - [x] **Priorities**: Add high/medium/low priorities to todos for better organization.
-- [ ] **Due Dates**: Implement due dates and reminders to track deadlines.
+- [x] **Due Dates**: Implement due dates and reminders to track deadlines.
 - [ ] **Edit Command**: Allow modifying existing tasks with an edit command.
 - [ ] **Search/Filter**: Add functionality to search and filter tasks by title, status, or date.
 - [ ] **Sorting Options**: Include sorting by creation date, priority, or due date.
