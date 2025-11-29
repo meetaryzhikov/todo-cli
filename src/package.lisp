@@ -3,7 +3,8 @@
   (:export #:current-timestamp
            #:format-date
            #:string-empty-p
-           #:parse-integer-safe))
+           #:parse-integer-safe
+           #:parse-date))
 
 (defpackage :todo-cli.models
   (:use :cl :todo-cli.utils)
@@ -16,6 +17,7 @@
            #:todo-priority
            #:todo-created-at
            #:todo-completed-at
+           #:todo-due-date
            #:complete-todo
            #:todo-to-plist
            #:plist-to-todo))
