@@ -8,7 +8,8 @@
   (completed-p nil :type boolean)
   (priority :medium :type keyword)
   (created-at nil :type (or null integer))
-  (completed-at nil :type (or null integer)))
+  (completed-at nil :type (or null integer))
+  (due-date nil :type (or null integer)))
 
 (defun complete-todo (todo)
   "Mark task as completed"
@@ -24,7 +25,8 @@
         :completed-p (todo-completed-p todo)
         :priority (todo-priority todo)
         :created-at (todo-created-at todo)
-        :completed-at (todo-completed-at todo)))
+        :completed-at (todo-completed-at todo)
+        :due-date (todo-due-date todo)))
 
 (defun plist-to-todo (plist)
   "Create task from plist"
@@ -34,4 +36,5 @@
              :completed-p (getf plist :completed-p)
              :priority (getf plist :priority :medium)
              :created-at (getf plist :created-at)
-             :completed-at (getf plist :completed-at)))
+             :completed-at (getf plist :completed-at)
+             :due-date (getf plist :due-date)))
