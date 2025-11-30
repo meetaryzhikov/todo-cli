@@ -37,6 +37,7 @@ todo <command> [arguments]
 - `complete <id>` - Mark task as completed
 - `remove <id>` - Delete a task
 - `edit <id> <title> [description] [priority] [due-date]` - Edit an existing task
+- `search <key> <value> ...` - Search tasks by title, status (completed/pending), date (YYYY-MM-DD)
 - `reminders` - Show overdue tasks
 - `help` - Show help information
 

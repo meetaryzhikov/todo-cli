@@ -41,3 +41,7 @@ dist/
 *~
 *.bak
 *.swp
+
+# Build directory and Quicklisp installer
+bin/
+quicklisp.lisp

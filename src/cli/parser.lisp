@@ -23,5 +23,7 @@
        (make-command :name :reminders))
      ((string= (first args) "edit")
        (make-command :name :edit :args (rest args)))
-     (t
-       (make-command :name :unknown :args args))))
+     ((string= (first args) "search")
+       (make-command :name :search :args (rest args)))
+      (t
+        (make-command :name :unknown :args args))))
