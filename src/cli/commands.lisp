@@ -21,10 +21,10 @@
   (format t "ToDo CLI - Simple Task Management App~%~%")
   (format t "Usage:~%")
   (format t " todo add <title> [description] [priority] [due-date]  - Add new task (priority: high, medium, low; due-date: YYYY-MM-DD)~%")
-  (format t " todo list [--all]               - Show task list~%")
+  (format t " todo list [--all] [--sort-by <field>] [--sort-order <asc|desc>] - Show task list (fields: creation-date, priority, due-date)~%")
    (format t " todo complete <id>              - Mark task as completed~%")
    (format t " todo remove <id>                - Delete task~%")
-   (format t " todo edit <id> <title> [desc] [pri] [due] - Edit task~%")
+  (format t " todo edit <id> <title> [desc] [pri] [due] - Edit task~%")
     (format t " todo search <key> <value> ...   - Search tasks by title, status, date~%")
     (format t " todo reminders                  - Show overdue tasks~%")
     (format t " todo help                       - Show this help~%~%"))
@@ -47,14 +47,26 @@
 
 (defun list-command (args storage)
   "Show tasks list"
-  (let ((todos (list-todos storage :show-completed
-                  (member "--all" args :test #'string=))))
-    (if todos
-      (progn
-        (format t "~%Tasks list:~%")
-        (format t "~{~a~%~}"
-          (mapcar #'format-todo todos)))
-      (format t "No tasks to display~%"))))
+  (let* ((show-all (member "--all" args :test #'string=))
+         (sort-by-pos (position "--sort-by" args :test #'string=))
+         (sort-by (if sort-by-pos (nth (1+ sort-by-pos) args) nil))
+         (sort-order-pos (position "--sort-order" args :test #'string=))
+         (sort-order (if sort-order-pos (nth (1+ sort-order-pos) args) "asc")))
+    (when (and sort-by (not (member sort-by '("creation-date" "priority" "due-date") :test #'string=)))
+      (format t "Invalid sort-by field: ~a. Valid: creation-date, priority, due-date~%" sort-by)
+      (return-from list-command))
+    (when (and sort-order (not (member sort-order '("asc" "desc") :test #'string=)))
+      (format t "Invalid sort-order: ~a. Valid: asc, desc~%" sort-order)
+      (return-from list-command))
+    (let ((todos (list-todos storage :show-completed show-all)))
+      (when sort-by
+        (setf todos (sort-todos todos sort-by sort-order)))
+      (if todos
+        (progn
+          (format t "~%Tasks list:~%")
+          (format t "~{~a~%~}"
+            (mapcar #'format-todo todos)))
+        (format t "No tasks to display~%")))))
 
 (defun complete-command (args storage)
   "Mark task as completed"
@@ -166,6 +178,29 @@
         (format t "~{~a~%~}"
           (mapcar #'format-todo overdue-todos)))
       (format t "No overdue tasks~%"))))
+
+(defun priority-value (priority)
+  "Get numeric value for priority sorting"
+  (case priority
+    (:high 3)
+    (:medium 2)
+    (:low 1)
+    (t 2)))
+
+(defun priority-key (todo)
+  (priority-value (todo-priority todo)))
+
+(defun due-date-key (todo)
+  (or (todo-due-date todo) most-positive-fixnum))
+
+(defun sort-todos (todos sort-by sort-order)
+  "Sort todos by field and order"
+  (let ((key-fn (cond ((string= sort-by "creation-date") #'todo-created-at)
+                      ((string= sort-by "priority") #'priority-key)
+                      ((string= sort-by "due-date") #'due-date-key)
+                      (t nil)))
+        (test (if (string= sort-order "asc") #'< #'>)))
+    (sort todos test :key key-fn)))
 
 (defun format-todo (todo)
   "Format the task for output"

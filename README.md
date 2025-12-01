@@ -33,7 +33,7 @@ todo <command> [arguments]
 ## Commands
 
 - `add <title> [description] [priority] [due-date]` - Add a new task (priority: high, medium, low; default: medium; due-date: YYYY-MM-DD)
-- `list [--all]` - Show task list (use --all to include completed tasks)
+- `list [--all] [--sort-by <field>] [--sort-order <asc|desc>]` - Show task list (use --all to include completed tasks; fields: creation-date, priority, due-date)
 - `complete <id>` - Mark task as completed
 - `remove <id>` - Delete a task
 - `edit <id> <title> [description] [priority] [due-date]` - Edit an existing task
