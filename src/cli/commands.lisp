@@ -12,16 +12,20 @@
     (:complete (complete-command (command-args command) storage))
      (:remove (remove-command (command-args command) storage))
      (:edit (edit-command (command-args command) storage))
-      (:search (search-command (command-args command) storage))
-      (:reminders (reminders-command storage))
-      (:unknown (format t "Unknown command. Use 'help' for help.~%"))))
+     (:search (search-command (command-args command) storage))
+     (:reminders (reminders-command storage))
+     (:unknown (format t "Unknown command. Use 'help' for help.~%"))))
 
 (defun help-command ()
   "Show help"
   (format t "ToDo CLI - Simple Task Management App~%~%")
   (format t "Usage:~%")
   (format t " todo add <title> [description] [priority] [due-date]  - Add new task (priority: high, medium, low; due-date: YYYY-MM-DD)~%")
+<<<<<<< HEAD
   (format t " todo list [--all] [--sort-by <field>] [--sort-order <asc|desc>] - Show task list (fields: creation-date, priority, due-date)~%")
+=======
+  (format t " todo list [--all] [--sort-by <field>] [--sort-order <asc|desc>] - Show task list (use --all to include completed tasks; fields: creation-date, priority, due-date)~%")
+>>>>>>> feature/search-filter
    (format t " todo complete <id>              - Mark task as completed~%")
    (format t " todo remove <id>                - Delete task~%")
   (format t " todo edit <id> <title> [desc] [pri] [due] - Edit task~%")
@@ -122,8 +126,9 @@
                 (update-todo storage id title description priority due-date)
                 (format t "Task #~d updated~%" id))
               (format t "Task with ID ~d not found~%" id)))
-          (format t "Error: Invalid task ID~%"))))))
+           (format t "Error: Invalid task ID~%"))))))
 
+<<<<<<< HEAD
 (defun search-command (args storage)
   "Search and filter tasks"
   (let ((filters (parse-search-args args)))
@@ -165,6 +170,49 @@
     todos))
 
 (defun reminders-command (storage)
+=======
+ (defun search-command (args storage)
+   "Search and filter tasks"
+   (let ((filters (parse-search-args args)))
+     (let ((filtered-todos (filter-todos (list-todos storage :show-completed t) filters)))
+       (if filtered-todos
+         (progn
+           (format t "~%Filtered tasks:~%")
+           (format t "~{~a~%~}"
+             (mapcar #'format-todo filtered-todos)))
+         (format t "No tasks match the filters~%")))))
+
+ (defun parse-search-args (args)
+   "Parse search arguments into filters plist"
+   (let ((filters '()))
+     (loop for (key value . rest) on args by #'cddr
+           do (when value
+                (push (cons (intern (string-upcase key) :keyword) value) filters)))
+     filters))
+
+ (defun filter-todos (todos filters)
+   "Filter todos based on filters"
+   (remove-if-not
+     (lambda (todo)
+       (every (lambda (filter)
+                (let ((key (car filter))
+                      (value (cdr filter)))
+                  (case key
+                    (:title (or (search value (todo-title todo) :test #'string-equal)
+                                (search value (todo-description todo) :test #'string-equal)))
+                    (:status (cond ((string-equal value "completed") (todo-completed-p todo))
+                                   ((string-equal value "pending") (not (todo-completed-p todo)))
+                                   (t t)))
+                    (:date (let ((due-date (todo-due-date todo)))
+                             (if due-date
+                                 (string= value (format-date due-date))
+                                 nil)))
+                    (t t))))
+              filters))
+     todos))
+
+ (defun reminders-command (storage)
+>>>>>>> feature/search-filter
   "Show overdue tasks"
   (let ((overdue-todos (remove-if-not
                         (lambda (todo)
