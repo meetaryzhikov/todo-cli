@@ -1,7 +1,7 @@
 (in-package :todo-cli.cli)
 
 (defstruct command
-  "Structure for representing a team"
+  "Structure for representing a command"
   name args options)
 
 (defun parse-args (args)
@@ -23,7 +23,7 @@
        (make-command :name :reminders))
      ((string= (first args) "edit")
        (make-command :name :edit :args (rest args)))
-     ((string= (first args) "search")
-       (make-command :name :search :args (rest args)))
+      ((string= (first args) "search")
+        (make-command :name :search :args (rest args)))
       (t
         (make-command :name :unknown :args args))))
